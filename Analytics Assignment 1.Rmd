@@ -1,0 +1,200 @@
+---
+title: "Group 8 Assignment 1"
+author: "Group 8"
+date: "4/16/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggpubr)
+library(dplyr)
+library(janitor)
+library(here)
+library(readxl)
+```
+
+## Load data - csv
+## This is a Covid-19 vaccination dataset based on age and sex
+
+```{r vaccinecoverage}
+vaccoverage <- readr::read_csv(file = "https://health-infobase.canada.ca/src/data/covidLive/vaccination-coverage-byAgeAndSex.csv")
+```
+
+## Head
+
+```{r pressure, echo=TRUE}
+head(vaccoverage)
+```
+
+## Provide and introduction of your analysis in the .rmd files so that it can be 
+## produced in the Output: 
+
+```{r}
+# In this assignment we will be working with the Covid-19 vaccination dataset based on age and sex. This dataset has been acquired from google database: 
+
+# This analysis focuses on vaccination reach according to the age and sex of different provinces of Canada. This data is of 2021. 
+```
+
+
+## Print the Structure of your dataset:
+```{r stucture}
+str(vaccoverage)
+```
+
+
+## List the variables in your dataset:
+
+```{r variables, echo=FALSE}
+names(vaccoverage)
+```
+
+
+## Print the top 15 rows of your dataset:
+
+```{r rows}
+head(vaccoverage, n=15)
+```
+
+
+
+
+
+
+## Write a user defined function using any of the variables from the dataset:
+
+```{r}
+library(dplyr)
+prenamefn <- function(x) {return(vaccoverage %>% filter(vaccoverage$prename==x))}
+print(prenamefn("Newfoundland and Labrador"))
+```
+
+
+## Use data manipulation techniques and filter rows based on any logical criteria that exist in your dataset.
+
+
+```{r}
+library(dplyr)
+vaccoverage %>% filter(sex=="f")
+```
+
+
+## Identify the dependent & independent variables and use reshaping techniques and create a new data frame by joining those variables from your dataset.
+
+```{r reshaping}
+vacnew = cbind(vaccoverage$week_end, vaccoverage$age,vaccoverage$sex)
+vacnew = data.frame(vacnew)
+str(vacnew)
+```
+
+## Remove missing values in your dataset 
+
+```{r}
+complete.cases(vaccoverage)
+```
+
+
+## Identify and remove duplicated data in your dataset 
+
+```{r}
+duplicated(vaccoverage)
+distinct(vaccoverage)
+```
+
+
+
+
+## Reorder multiple rows in descending order 
+
+
+```{r}
+library(tidyverse)
+vaccoverage %>% arrange(desc(vaccoverage))
+```
+
+
+## Rename some of the column names in your dataset.
+
+```{r rename}
+library(dplyr)
+dplyr::rename(vaccoverage, pruid1 = pruid, prename1 = prename, prfname1 = prfname)
+```
+
+
+## Add new variables in your data frame by using a mathematical function (for e.g. – multiply an existing column by 2 and add it as a new variable to your data frame)
+
+
+```{r}
+vaccoverage$newcolumn <- vaccoverage$numtotal_1doserange * 2
+str(vaccoverage)
+```
+
+
+
+## Create a training set using random number generator engine.
+
+
+```{r}
+rnorm(20)
+runif(2, min = 0, max = 500)
+```
+
+
+
+## Print the summary statistics of your dataset.
+
+
+```{r}
+summary(vaccoverage)
+```
+
+
+
+
+## Use any of the numerical variables from the dataset and perform the following statistical functions.
+## Mean 
+## Median 
+## Mode
+## Range
+
+
+```{r}
+library(modeest)
+mean(vaccoverage$pruid)
+median(vaccoverage$pruid)
+mode = mfv(vaccoverage$age)
+print(mode)
+range(vaccoverage$prfname)
+```
+
+
+
+## Plot a scatter plot for any 2 variables in your dataset
+
+```{r}
+library(ggplot2)
+ggplot(data = vaccoverage, aes(x = numtotal_atleast1dose, y = prename, col_factor(vaccoverage$prfname)))+ geom_point()
+```
+
+
+## • Plot a bar plot for any 2 variables in your dataset
+
+
+```{r}
+vaccoverage$age = as.character(vaccoverage$age)
+library(ggplot2)
+ggplot(data = vaccoverage, aes(x = age, fill = factor(sex)))+geom_bar()
+```
+
+
+
+## Find the correlation between any 2 variables by applying least square linear regression model.
+
+
+```{r}
+vaccoverage$numtotal_1dose = as.numeric(vaccoverage$numtotal_1dose)
+vaccoverage$prop_atleast1dose = as.numeric(vaccoverage$prop_atleast1dose)
+ggscatter(vaccoverage, x = "numtotal_1dose", y = "prop_atleast1dose", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "numtotal_1dose", ylab = "prop_atleast1dose")
+```
+
+
